@@ -1,0 +1,12 @@
+{
+  "name": "less_compiler",
+  "scripts": {
+    "watch": "nodemon -e less --watch . --exec \"npm run compile\"",
+    "compile": "lessc --clean-css ./assets/css/main.less ./assets/css/main.css"
+  },
+  "devDependencies": {
+    "less": "^2.7.3",
+    "less-plugin-clean-css": "^1.5.1",
+    "nodemon": "^1.12.1"
+  }
+}
