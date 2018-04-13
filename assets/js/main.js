@@ -12,7 +12,11 @@
       count: 4,
       widths: [],
       heights: [],
-      offset: []
+      offset: [],
+      redboxWidth: 0,
+      yearWidth: 0,
+      yearPosition: [],
+      yearFontSize: [],
     }
     var assets = {
       counter: 2,
@@ -81,24 +85,44 @@
       return Date.now()
     }
     function dw(v) {
+      return Math.min(v, Math.round(v*wM))
+    }
+    function fdw(v) {
       return function () {
         return Math.min(v, Math.round(v*wM))
       }
     }
     function dh(v) {
+      return Math.min(v, Math.round(v*hM))
+    }
+    function fdh(v) {
       return function () {
         return Math.min(v, Math.round(v*hM))
       }
     }
     function dH() {
-      return function () {
-        return h
-      }
+      return h
     }
+    // function fdH() {
+    //   return function () {
+    //     return h
+    //   }
+    // }
     function dW() {
-      return function () {
-        return w
-      }
+      return w
+    }
+    // function fdW() {
+    //   return function () {
+    //     return w
+    //   }
+    // }
+    function r(start, duration) { // calculate ratio
+      var timeDifference = n() - start
+      return timeDifference > duration ? 1 : timeDifference/duration
+    }
+    function re(start, duration, ease) { // calculate ratio with ease
+      var timeDifference = n() - start
+      return ease(timeDifference > duration ? 1 : timeDifference/duration)
     }
     function hasClass(el, className) {
       if (el.classList)
@@ -122,35 +146,11 @@
       }
     }
     function easeInQuad(t) { return t*t }
-    // function fade(element) {
-    //     var op = 1;  // initial opacity
-    //     var timer = setInterval(function () {
-    //         if (op <= 0.1){
-    //             clearInterval(timer);
-    //             element.style.display = 'none';
-    //         }
-    //         element.style.opacity = op;
-    //         element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-    //         op -= op * 0.1;
-    //     }, 50);
-    // }
-    // function fadeIn(element, timing) {
-    //   var op = 0;  // initial opacity
-    //   element.style.display = 'block';
-    //   var timer = setInterval(function () {
-    //       if (op >= 1){
-    //           clearInterval(timer);
-    //       }
-    //       element.style.opacity = op;
-    //       element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-    //       op += op * 0.1;
-    //   }, timing);
-    // }
     // function easeInCubic(t) { return t*t*t }
 
   /* binds */
     // resize the canvas to fill browser window dynamically
-    window.addEventListener('resize', resizeCanvas, false);
+    window.addEventListener('resize', resizeCanvas, false)
 
     function resizeCanvas() {
       w = window.innerWidth
@@ -172,7 +172,6 @@
       if(typeof sceneResize === 'function') {
         sceneResize()
       }
-      // draw();
     }
 
   /* preload */
@@ -215,7 +214,7 @@
         var imgWidth = img.width*wM
         var imgHeight = img.height*wM
 
-        ctx.drawImage(img, center[0]- imgWidth/2, center[1] - imgHeight/2, imgWidth, imgHeight);
+        ctx.drawImage(img, center[0]- imgWidth/2, center[1] - imgHeight/2, imgWidth, imgHeight)
         var timing = glitch.timing
 
         if(n() > start + glitch.currentTiming*timing*1000 + currentScene[1]*timing*1000) {
@@ -223,60 +222,47 @@
 
           if(glitch.index < glitch.map.length - 1) {
             ++glitch.index
-            return true
-          }
-          else {
-            return true
           }
         }
-        return true
       },
       bg: function(start, opts) {
         var img = opts.img
         var imgWidth = img.width*wM
         var imgHeight = img.height*wM
+        var ratio = r(start, opts.timing)
+
         ctx.save()
-        var tm = n() - start
-        ratio = tm > opts.timing ? 1 : tm/opts.timing
-        ctx.globalAlpha = ratio
-        ctx.drawImage(img, center[0]- imgWidth/2 - opts.offset.x*wM, center[1] - imgHeight/2 + opts.offset.y*wM, imgWidth, imgHeight);
+
+          ctx.globalCompositeOperation = 'destination-over'
+          ctx.globalAlpha = ratio
+          ctx.drawImage(img, center[0]- imgWidth/2 - opts.offset.x*wM, center[1] - imgHeight/2 + opts.offset.y*wM, imgWidth, imgHeight)
+
         ctx.restore()
-
-        // console.log(ratio)
-        // ctx.save()
-        // ctx.restore
-
-        return true
       },
       bg2: function(start, opts) {
         var img = opts.img
         var imgWidth = img.width*wM
         var imgHeight = img.height*wM
+        var ratio = r(start, opts.timing)
+
         ctx.save()
-        ctx.globalCompositeOperation = 'destination-over';
-        var tm = n() - start
-        ratio = tm > opts.timing ? 1 : tm/opts.timing
-        ctx.globalAlpha = ratio
-        ctx.drawImage(img, opts.x*wM, opts.y*hM, imgWidth, imgHeight);
+
+          ctx.globalCompositeOperation = 'destination-over'
+          ctx.globalAlpha = ratio
+          ctx.drawImage(img, opts.x(), opts.y(), imgWidth, imgHeight)
+
         ctx.restore()
-
-        // console.log(ratio)
-        // ctx.save()
-        // ctx.restore
-
-        return true
       },
       line: function(start, opts) {
-        if(opts.onlyDesktop && !screen.desktop()) { return true }
-        var tm = n() - start
 
-        ratio = tm > opts.timing ? 1 : tm/opts.timing
+        var ratio = r(start, opts.timing)
 
-        ctx.beginPath();
-        ctx.moveTo(opts.x1() ,opts.y1());
-        ctx.lineTo(opts.x2(ratio), opts.y2(ratio));
-        ctx.strokeStyle = 'rgb(255,145,129)'
-        ctx.stroke();
+        ctx.beginPath()
+
+          ctx.moveTo(opts.x1() ,opts.y1())
+          ctx.lineTo(opts.x2(ratio), opts.y2(ratio))
+          ctx.strokeStyle = 'rgb(255,145,129)'
+          ctx.stroke()
 
         if(ratio === 1) {
           ctx.beginPath()
@@ -284,131 +270,97 @@
           ctx.fillStyle = 'rgb(255,145,129)'
           ctx.fill()
         }
-
-        return true
       },
       rect: function(start, opts) {
-        if(opts.onlyDesktop && !screen.desktop()) { return true }
-        // console.log(opts)
-        var tm = n() - start
+        var ratio = re(start, opts.timing, easeInQuad)
 
-        ratio = easeInQuad(tm > opts.timing ? 1 : tm/opts.timing)
-        ctx.globalCompositeOperation = 'multiply';
+        ctx.globalCompositeOperation = 'multiply'
         ctx.fillStyle = 'rgba(235, 21, 0, .65)'
-        ctx.fillRect(opts.x(ratio), opts.y(ratio), opts.w(ratio), opts.h(ratio));
-
-        // if(ratio === 1 && opts.hasOwnProperty('end') && typeof opts.end === 'function') {
-        //   opts.end()
-        // }
+        ctx.fillRect(opts.x(ratio), opts.y(ratio), opts.w(ratio), opts.h(ratio))
       },
       slice: function(start, opts) {
-        if(opts.onlyDesktop && !screen.desktop()) { return true }
-
+        var ratio = r(start, opts.timing)
         var sliceIndex = opts.index-1
 
-        // console.log(start)
-        var tm = n() - start
-        var ratio = tm > opts.timing ? 1 : tm/opts.timing
-
-        ctx.drawImage(slices.imgs[sliceIndex], w-slices.offset[sliceIndex], h-h*ratio, slices.widths[sliceIndex], slices.heights[sliceIndex]);
-
-        return true
+        ctx.drawImage(slices.imgs[sliceIndex], w-slices.offset[sliceIndex], h-h*ratio, slices.widths[sliceIndex], slices.heights[sliceIndex])
       },
-      circle: function(start, opts) {
-        // if(opts.onlyDesktop && !screen.desktop()) { return true }
-        // var tm = n() - start
-        // var ratio = tm > opts.timing ? 1 : tm/opts.timing
+      // circle: function(start, opts) {
+      //   var ratio = r(start, opts.timing)
 
-        // ctx.beginPath()
-        // ctx.arc(opts.x(), opts.y(), opts.radius*ratio, 0, Math.PI * 2, true)
-        // ctx.fillStyle = 'rgb(254,183,79)'
-        // ctx.fill()
-      },
+      //   ctx.beginPath()
+      //     ctx.arc(opts.x(), opts.y(), opts.radius*ratio, 0, Math.PI * 2, true)
+      //     ctx.fillStyle = 'rgb(254,183,79)'
+      //     ctx.fill()
+      // },
       end: function(start, opts) {
         jumpToNextScene = true
       },
       fadeIn: function(start, opts) {
+        var ratio = re(start, opts.timing, easeInQuad)
         var element = opts.element
-        // console.log(element)
 
-        var tm = n() - start
-        var op = tm > opts.timing ? 1 : tm/opts.timing
-
-        // element.style.display = 'block';
-        element.style.opacity = op;
-        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-
+        element.style.opacity = ratio
+        element.style.filter = 'alpha(opacity=' + ratio * 100 + ")"
+        if(ratio === 1) { return null }
       },
       css: function(start, opts) {
-        var element = opts.element
-        addClass(element, 'animation')
-        console.log('called')
-        return function () {}
+        addClass(opts.element, opts.klass)
+        return null
       },
-      year_line: function(start, opts) {
-        if(opts.onlyDesktop && !screen.desktop()) { return true }
-
-        var number = opts.number
-        var tm = n() - start
-
-        ratio = tm > opts.timing ? 1 : tm/opts.timing
-
-
-        ctx.save()
-
-        ctx.font = Math.floor(24*hM) + 'rem OswaldBold';
-        ctx.textBaseline = 'top';
-        var textMeasure = ctx.measureText(number);
-        var textWidth = textMeasure.width
-
-
-        ctx.globalCompositeOperation = 'overlay';
-
-        ctx.beginPath();
-        ctx.moveTo(opts.x1(ratio)+textWidth*.6 ,opts.y1(ratio));
-        ctx.lineTo(opts.x2(ratio)+textWidth*.6, opts.y2(ratio));
-        ctx.strokeStyle = 'rgba(255,255,255,1)'
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(opts.x1(ratio)+textWidth*.6 ,opts.y1(ratio));
-        ctx.lineTo(opts.x2(ratio)+textWidth*.6, opts.y2(ratio));
-        ctx.strokeStyle = 'rgba(255,255,255,1)'
-        ctx.stroke();
-
-        ctx.restore()
-        return true
-      },
-      year_number: function(start, opts) {
-        // ctx.restore()
+      yearLine: function(start, opts) {
+        var ratio = r(start, opts.timing)
         var number = opts.number
 
         ctx.save()
 
-        ctx.font = Math.floor(24*hM) + 'rem OswaldBold';
-        ctx.textBaseline = 'top';
-        var textMeasure = ctx.measureText(number);
-        var textWidth = textMeasure.width
+          // ctx.font = Math.floor(24*hM) + 'rem OswaldBold'
+          // ctx.textBaseline = 'top'
+          ctx.globalCompositeOperation = 'overlay'
 
-        // console.log(textMeasure, textWidth)
-        // console.log(textWidth)
-        ctx.globalCompositeOperation = 'overlay';
-         ctx.beginPath();
-        // console.log(number, opts.x)
-        ctx.rect(dW()() - opts.offset*wM, 0, textWidth*0.6, dH()());
-        // ctx.stroke();
-        ctx.clip();
+          // var textWidth = ctx.measureText(number).width
+          var x1 = dW()-slices.yearPosition[opts.position-1] + slices.yearWidth * .6
+          var y1 = dH() - slices.yearFontSize[opts.position-1]*14
+          var x2 = x1
+          var y2 = dH() - (slices.yearFontSize[opts.position-1]*14) * (1 - ratio)
 
 
-        var tm = n() - start
-        var ratio = tm > opts.timing ? 1 : tm/opts.timing
-        ctx.fillStyle = 'rgba(255,255,255,1)'
-        ctx.fillText(number, dW()() - opts.offset*wM + (textWidth*(1-ratio)), dH()() - 262*hM + 5); //30-30*ratio
-        ctx.fillText(number, dW()() - opts.offset*wM + (textWidth*(1-ratio)), dH()() - 262*hM + 5); //30-30*ratio
+          ctx.beginPath()
+            ctx.moveTo(x1, y1)
+            ctx.lineTo(x2, y2)
+            ctx.strokeStyle = 'rgba(255,255,255,1)'
+            ctx.stroke()
+
+          ctx.beginPath()
+            ctx.moveTo(x1, y1)
+            ctx.lineTo(x2, y2)
+            ctx.strokeStyle = 'rgba(255,255,255,1)'
+            ctx.stroke()
 
         ctx.restore()
+      },
+      yearNumber: function(start, opts) {
+        var ratio = r(start, opts.timing)
+        var number = opts.number
 
-        return true
+        ctx.save()
+
+          ctx.font = slices.yearFontSize[opts.position-1] + 'rem OswaldBold'
+          ctx.textBaseline = 'top'
+          ctx.globalCompositeOperation = 'overlay'
+
+          // var textWidth = ctx.measureText(number).width
+
+          ctx.beginPath()
+          //  opts.offset*wM
+            ctx.rect(dW() - slices.yearPosition[opts.position-1], 0, slices.yearWidth * .6, dH())
+            ctx.clip()
+
+
+          ctx.fillStyle = 'rgba(255,255,255,1)'
+          ctx.fillText(number, dW() - slices.yearPosition[opts.position-1] + (slices.yearWidth*(1-ratio)), dH() - slices.yearFontSize[opts.position-1]*11)
+          ctx.fillText(number, dW() - slices.yearPosition[opts.position-1] + (slices.yearWidth*(1-ratio)), dH() - slices.yearFontSize[opts.position-1]*11)
+
+        ctx.restore()
       }
     }
 
@@ -453,9 +405,37 @@
           slices.heights = imgHeights
           slices.offset = imgWidthsBefore.reverse()
 
+
+          // width of redbox that is less then last two slices
+          slices.redboxWidth = slices.offset[2]-slices.widths[2]*0.1
+
           // number data calculation
+          var yearPadding = slices.offset[2] * 0.05
+          var yearWidth = (slices.offset[2] - 2 * yearPadding) / 4
+          slices.yearWidth = yearWidth
+          slices.yearPosition = []
 
 
+          var wa = [4,3,2,1]
+          wa.forEach(function(d) {
+            slices.yearPosition.push(d * yearWidth + yearPadding)
+          })
+
+          slices.yearFontSize = []
+
+          wa = ['1', '9', '1', '8']
+          wa.forEach(function(d) {
+            var textWidth = 99999
+            var fontSize = 25
+            while(textWidth > yearWidth) {
+              --fontSize
+              ctx.font = fontSize + 'rem OswaldBold'
+              ctx.textBaseline = 'top'
+              textWidth = ctx.measureText(d).width
+            }
+            slices.yearFontSize.push(fontSize)
+          })
+          // console.log(slices, yearPadding)
 
         },
       ]
@@ -463,200 +443,138 @@
         [
           delayCheck(2000, drawings.glitch),
           delayCheck(2200, drawings.line, {
-            timing: 800, // 400
-            x1: function() {return 0},
-            y1: function () {
-              return dh(115)()
-            },
-            x2: function (ratio) {
-              return ratio * dw(290)()
-            },
-            y2: function (ratio) {
-              return dh(115)()
-            },
+            timing: 800,
             onlyDesktop: true,
+            x1: function() {return 0 },
+            y1: function () { return dh(115) },
+            x2: function (ratio) { return ratio * dw(290) },
+            y2: function () { return dh(115) },
           }),
           delayCheck(1800, drawings.line, {
-            timing: 800, // 600
-            x1: dW(),
-            y1: function () {
-              return h - dh(420)()
-            },
-            x2: function (ratio) {
-              return w - ratio * dw(450)()
-            },
-            y2: function (ratio) {
-              return h - dh(420)()
-            },
+            timing: 800,
             onlyDesktop: true,
+            x1: dW,
+            y1: function () { return dH() - dh(420) },
+            x2: function (ratio) { return dW() - ratio * dw(450) },
+            y2: function () { return dH() - dh(420) },
           }),
           delayCheck(1400, drawings.line, {
-            timing: 600, // 400
-            x1: dw(240),
-            y1: dH(),
-            x2: dw(240),
-            y2: function (ratio) {
-              return h - ratio * dh(320)()
-            },
+            timing: 600,
             onlyDesktop: true,
+            x1: fdw(240),
+            y1: dH,
+            x2: fdw(240),
+            y2: function (ratio) { return dH() - ratio * dh(320) },
           }),
           delayCheck(1600, drawings.line, {
-            timing: 800, // 600
-            x1: dw(140),
-            y1: dH(),
-            x2: dw(140),
-            y2: function (ratio) {
-              return h - ratio * dh(500)()
-            },
+            timing: 800,
             onlyDesktop: true,
+            x1: fdw(140),
+            y1: dH,
+            x2: fdw(140),
+            y2: function (ratio) { return dH() - ratio * dh(500) },
           }),
           delayCheck(2000, drawings.rect, {
             timing: 600,
-            x: function() {return w - dw(32)() - dw(135)() },
-            y: function() {return 0},
-            w: dw(32),
-            h: function (ratio) {
-              return ratio * dh(315)()
-            },
             onlyDesktop: true,
+            x: function() { return dW() - dw(32) - dw(135) },
+            y: function() { return 0 },
+            w: fdw(32),
+            h: function (ratio) { return ratio * dh(315) },
           }),
-          delayCheck(1400, drawings.bg, { timing: 400, img: loader_bg1, offset: {x: 130, y: 130 }}),
-          delayCheck(1600, drawings.bg, { timing: 400, img: loader_bg2, offset: { x: -290, y: -360 }}),
-
+          delayCheck(1400, drawings.bg, {
+            timing: 400,
+            img: loader_bg1,
+            offset: {x: 130, y: 130 }
+          }),
+          delayCheck(1600, drawings.bg, {
+            timing: 400,
+            img: loader_bg2,
+            offset: { x: -290, y: -360 }
+          }),
           delayCheck(6000, drawings.rect, {
-            // end: function () {
-            //   jumpToNextScene = true
-            // },
             timing: 1000,
-            x: function() {return w - dw(32)() - dw(135)() },
-            y: function() {return dh(315)()},
-            w: dw(32),
-            h: function (ratio) {
-              return ratio * (dH()()-dh(315)())
-            },
             onlyDesktop: true,
+            x: function() {return dW() - dw(32) - dw(135) },
+            y: function() {return dh(315) },
+            w: fdw(32),
+            h: function (ratio) { return ratio * (dH()-dh(315)) },
           }),
           delayCheck(7000, drawings.end, {})
-
-          // delayCheck(0, drawings.rect, {
-          //   end: function () {
-          //     jumpToNextScene = true
-          //   },
-          //   timing: 1000,
-          //   x: function() {return w - dw(32)() - dw(135)() },
-          //   y: function() {return 0},
-          //   w: dw(32),
-          //   h: function (ratio) {
-          //     return ratio * (dH()())
-          //   },
-          //   onlyDesktop: true,
-          // }),
         ],
+
         [
-
           delayCheck(0, drawings.rect, {
-            timing: 1000,
-            x: function(ratio) {
-              var t = dw(564)() - (dw(32)() + dw(135)())
-              return w - dw(32)() - dw(135)() - t*ratio
-            },
-            y: function() {return 0},
-            w: function (ratio) {
-              var t = dw(564)() - (dw(32)() + dw(135)())
-              return dw(32)() + ratio * dw(135)() + t * ratio
-            },
-            h: dH(),
+            timing: 800,
             onlyDesktop: true,
-          }),
-          delayCheck(1000, drawings.rect, {
-            timing: 1000,
             x: function(ratio) {
-              return w - dw(564)() - dw(312)() * ratio
+              var rightW = dw(32+135)
+              var leftW = slices.redboxWidth - rightW
+              return dW() - rightW - leftW * ratio
             },
-            y: function() {return dH()() - dh(521)()},
+            y: function() { return 0 },
             w: function (ratio) {
-              return dw(312)()  * ratio
+              var rightW = dw(32+135)
+              var leftW = slices.redboxWidth - rightW
+              return dw(32) + dw(135) * ratio + leftW * ratio
             },
-            h: dh(521),
+            h: dH,
+          }),
+          delayCheck(800, drawings.rect, {
+            timing: 400,
             onlyDesktop: true,
+            x: function(ratio) { return dW() - slices.redboxWidth - slices.widths[1] * ratio },
+            y: function() {return dH()*0.64 }, //- dh(521)
+            w: function (ratio) { return slices.widths[1] * ratio },
+            h: function() { return dH()*0.64 } //fdh(521),
           }),
-/*
-          delayCheck(0, drawings.circle, { timing: 600, radius: 216, x: dw(80), y: dh(80), onlyDesktop: true, }),*/
-          delayCheck(100, drawings.slice, { timing: 600, index: 1, onlyDesktop: true, }),
-          delayCheck(300, drawings.slice, { timing: 200, index: 2, onlyDesktop: true, }),
-          delayCheck(100, drawings.slice, { timing: 600, index: 3, onlyDesktop: true, }),
-          delayCheck(200, drawings.slice, { timing: 400, index: 4, onlyDesktop: true, }),
 
 
-          delayCheck(100, drawings.year_line, { timing: 400, onlyDesktop: true,
-            number: '1',
-            x1: function(ratio) {return dW()()-dw(540)()},
-            y1: function () {
-              return dH()()-dh(320)()
-            },
-            x2: function (ratio) { return dW()()-dw(540)() },
-            y2: function (ratio) {
-              return dH()()- dh(320)() + dh(320)()*(ratio)
-            },
+          delayCheck(100, drawings.slice, { timing: 900, index: 1, onlyDesktop: true, }),
+          delayCheck(400, drawings.slice, { timing: 600, index: 2, onlyDesktop: true, }),
+          delayCheck(100, drawings.slice, { timing: 900, index: 3, onlyDesktop: true, }),
+          delayCheck(300, drawings.slice, { timing: 700, index: 4, onlyDesktop: true, }),
+
+          delayCheck(1200, drawings.css, { timing: 600, selector: '[data-id="1"]', klass: 'show' }),
+          delayCheck(1800, drawings.fadeIn, { timing: 600, selector: '[data-id="2"]', }),
+
+
+          delayCheck(1200, drawings.bg2, {
+            timing: 600,
+            onlyDesktop: true,
+            img: loader_bg3,
+            x: function () { return dW() - slices.offset[0]*1.1 },
+            y: function () { return -50*hM }
           }),
-          delayCheck(300, drawings.year_line, { timing: 400, onlyDesktop: true,
-            number: '9',
-            x1: function(ratio) {return dW()()-dw(420)()},
-            y1: function () {
-              return dH()()-dh(320)()
-            },
-            x2: function (ratio) { return dW()()-dw(420)() },
-            y2: function (ratio) {
-              return dH()()- dh(320)() + dh(320)()*(ratio)
-            },
+          delayCheck(1200, drawings.bg2, {
+            timing: 600,
+            onlyDesktop: true,
+            img: loader_bg4,
+            x: function () { return dW() - slices.offset[0] },
+            y: function () { return dH() * .73 }
           }),
-          delayCheck(500, drawings.year_line, { timing: 400, onlyDesktop: true,
-            number: '1',
-            x1: function(ratio) {return dW()()-dw(300)()},
-            y1: function () {
-              return dH()()-dh(320)()
-            },
-            x2: function (ratio) { return dW()()-dw(300)() },
-            y2: function (ratio) {
-              return dH()()- dh(320)() + dh(320)()*(ratio)
-            },
-          }),
-          delayCheck(700, drawings.year_line, { timing: 400, onlyDesktop: true,
-            number: '8',
-            x1: function(ratio) {return dW()()-dw(180)()},
-            y1: function () {
-              return dH()()-dh(320)()
-            },
-            x2: function (ratio) { return dW()()-dw(180)() },
-            y2: function (ratio) {
-              return dH()()- dh(320)() + dh(320)()*(ratio)
-            },
-          }),
-          // delayCheck(200, drawings.year_line, { timing: 1000, onlyDesktop: true, x: 1550, }),
-          // delayCheck(300, drawings.year_line, { timing: 1000, onlyDesktop: true, x: 1650, }),
-          // delayCheck(400, drawings.year_line, { timing: 1000, onlyDesktop: true, x: 1750, }),
 
-          delayCheck(200, drawings.year_number, { timing: 500, number: '1', onlyDesktop: true, offset: 540, }),
-          delayCheck(400, drawings.year_number, { timing: 500, number: '9', onlyDesktop: true, offset: 420, }),
-          delayCheck(500, drawings.year_number, { timing: 500, number: '1', onlyDesktop: true, offset: 300, }),
-          delayCheck(800, drawings.year_number, { timing: 500, number: '8', onlyDesktop: true, offset: 180, }),
+          delayCheck(1400, drawings.yearLine, { timing: 300, onlyDesktop: true, number: '1', position: 1, }),
+          delayCheck(1600, drawings.yearLine, { timing: 300, onlyDesktop: true, number: '9', position: 2, }),
+          delayCheck(1800, drawings.yearLine, { timing: 300, onlyDesktop: true, number: '1', position: 3, }),
+          delayCheck(2000, drawings.yearLine, { timing: 300, onlyDesktop: true, number: '8', position: 4, }),
 
-          delayCheck(400, drawings.bg2, { timing: 400, img: loader_bg3, x: 1420, y: -45 }),
-          delayCheck(400, drawings.bg2, { timing: 400, img: loader_bg4, x: 1320, y: 920 }),
-          // delayCheck(1600, drawings.bg, { timing: 400, img: loader_bg4, offset: { x: -290, y: -360 }}),
+          delayCheck(1450, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '1', position: 1, }),
+          delayCheck(1650, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '9', position: 2, }),
+          delayCheck(1850, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '1', position: 3, }),
+          delayCheck(2050, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '8', position: 4, }),
 
+          delayCheck(2000, drawings.fadeIn, { timing: 600, selector: '[data-id="3"]', }),
+          delayCheck(2500, drawings.fadeIn, { timing: 600, selector: '[data-id="6"]', }),
+          delayCheck(2700, drawings.fadeIn, { timing: 600, selector: '[data-id="7"]', }),
+          delayCheck(3000, drawings.fadeIn, { timing: 600, selector: '[data-id="8"]', }),
+          delayCheck(3300, drawings.fadeIn, { timing: 600, selector: '[data-id="10"]', }),
+          delayCheck(3600, drawings.fadeIn, { timing: 600, selector: '[data-id="11"]', }),
 
-
-          delayCheck(100, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="1"]'), }),
-          delayCheck(400, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="2"]'), }),
-          delayCheck(700, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="3"]'), }),
-          delayCheck(1000, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="4"]'), }),
-          delayCheck(1300, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="5"]'), }),
-          delayCheck(1600, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="6"]'), }),
-          delayCheck(1600, drawings.fadeIn, { timing: 1000, element: document.querySelector('[data-fade-in-id="7"]'), }),
-          delayCheck(200, drawings.css, { timing: 1000, element: document.querySelector('[data-hline-id="1"]'), }),
-          delayCheck(200, drawings.css, { timing: 1000, element: document.querySelector('[data-hline-id="2"]'), }),
-          delayCheck(200, drawings.css, { timing: 1000, element: document.querySelector('[data-vline-id="1"]'), }),
+          delayCheck(1800, drawings.css, { timing: 600, selector: '[data-id="4"]', klass: 'animation' }), // horizontal top
+          delayCheck(3400, drawings.css, { timing: 600, selector: '[data-id="9"]', klass: 'animation' }), // horizontal bottom
+          delayCheck(2200, drawings.css, { timing: 600, onlyDesktop: true, selector: '[data-id="5"]', klass: 'animation' }), // vertical line
+          delayCheck(1000, drawings.css, { timing: 0, selector: '.source', klass: 'show' }),
         ]
       ]
 
@@ -681,8 +599,13 @@
       return function () {
         var nw = n()
         if(nw > startTime + delay) {
-          // console.log(options)
-          return function () { return callback(nw, options) }
+          if(options.selector) {
+            options.element = document.querySelector(options.selector)
+          }
+          return function () {
+            if(options.onlyDesktop && !screen.desktop()) { return true }
+            return callback(nw, options)
+          }
         }
         return true
       }
@@ -690,7 +613,7 @@
 
     function draw() {
       // ctx.restore()// clear canvas
-      ctx.clearRect(0, 0, w, h);
+      ctx.clearRect(0, 0, w, h)
       if(jumpToNextScene) {
         scene = nextScene()
         if(scene === null) { return }
@@ -701,32 +624,27 @@
         if(typeof d === 'function') {
           var res = d()
           if(typeof res === 'function') {
-            // console.log(res)
-            scene[i] = res
-            res()
+            var next_res = res()
+            scene[i] = next_res === null ? null : res
           }
         }
       })
-      window.requestAnimationFrame(draw);
+      window.requestAnimationFrame(draw)
     }
 
   /* init */
 
     function init() {
-      resizeCanvas();
+      resizeCanvas()
 
-      ctx.globalCompositeOperation = 'destination-over';
-      // ctx.save()
+      ctx.globalCompositeOperation = 'destination-over'
 
       scene = nextScene()
 
-      window.requestAnimationFrame(draw);
+      window.requestAnimationFrame(draw)
 
       assets.preload()
     }
 
-
-
-
-  preload();
-})();
+  preload()
+})()
