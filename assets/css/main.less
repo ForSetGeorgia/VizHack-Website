@@ -43,9 +43,15 @@
 /* general */
 
   * { margin:0; padding:0; } /* to remove the top and left whitespace */
-  html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
+  html, body {
+    width:100%;
+    height:100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  } /* just to be sure these are full screen*/
   html {
     font-size: 62.5%;
+    touch-action: manipulation;
   }
   body {
     background-color: #fff;
@@ -71,6 +77,11 @@
   a, a:hover, a:focus, a:active {
     text-decoration: none;
   }
+  input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
 
 
 /* app */
@@ -82,6 +93,7 @@
     // min-height: 100%;
     height: 100%;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     &:after {
       pointer-events: none;
       content : "";
@@ -105,6 +117,9 @@
 
       .hidden {
         opacity: 0;
+      }
+      .shift {
+        top: -60px;
       }
       main {
 
@@ -135,7 +150,7 @@
         .hline {
           visibility: hidden;
           width: 0;
-          height: 1px;
+          height: 2px;
           background-color: #FF9181;
           position: relative;
           // margin: 10px 0;
@@ -146,15 +161,15 @@
             position: absolute;
             top: -2px;
             right: -2px;
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
             border-radius: 100%;
             background-color: #FF9181;
           }
 
           &.animation {
             visibility: visible;
-            width: 80%;
+            width: 90%;
           }
         }
         .vline {
@@ -179,6 +194,7 @@
           max-width: 450px;
           text-align: left;
           margin: 0 auto;
+          line-height: 2.7rem;
           &:first-of-type {
             padding: 38px 0 26px;
           }
@@ -286,17 +302,17 @@
           li {
             display: flex;
             flex-direction: column;
-            padding-bottom: 30px;
+            padding-bottom: 20px;
             &:not(last-child) {
               margin-right: 120px;
             }
             label {
               font: 2rem BPGWeb001Caps;
               color: #9B9B9B;
-              padding-bottom: 21px;
+              padding-bottom: 10px;
             }
             a {
-              margin: 0 0 0 40px;
+              margin: 0 auto;
             }
           }
         }
@@ -361,6 +377,7 @@
       .content {
         margin-right: 50%;
         main {
+          padding: 40px 0 0; // 60px
           margin: 0 auto;
           position: relative;
           margin: 0;
@@ -368,7 +385,7 @@
           .vline {
             display: block;
             visibility: hidden;
-            width: 1px;
+            width: 2px;
             height: 0;
             background-color: #FF9181;
             position: relative;
@@ -380,8 +397,8 @@
               position: absolute;
               bottom: -2px;
               right: -2px;
-              width: 5px;
-              height: 5px;
+              width: 6px;
+              height: 6px;
               border-radius: 100%;
               background-color: #FF9181;
             }
@@ -392,7 +409,7 @@
             }
           }
           .row {
-            padding-bottom: 115px;
+            padding-bottom: 75px;
           }
           .vizhack2017 {
             display: block;
@@ -410,7 +427,7 @@
             position: fixed;
             top: 15px;
             right: 25px;
-            opacity: .8;
+            opacity: .6;
             text-align: right;
             &.show {
               display: block;
@@ -422,15 +439,15 @@
             width: 0px;
             height: 0px;
             top: -132px;
-            left: -102px;
+            left: -82px;
             transition: all .6s ease-in-out;
             background-color: rgb(254,183,79);
             border-radius: 100%;
             overflow: hidden;
             &.show {
               visibility: visible;
-              width: 324px;
-              height: 324px;
+              width: 290px;
+              height: 290px;
             }
           }
           h1 {
@@ -439,7 +456,7 @@
           p {
             margin: 0;
             &:first-of-type {
-              padding: 56px 0 30px;
+              padding: 30px 0 30px;
             }
           }
           h1 {
@@ -451,11 +468,11 @@
 
           }
           .space {
-            padding: 0 31px 0 230px;
+            padding: 0 31px 0 220px;
           }
           .register {
             font: 2.75rem BPGWeb001Caps;
-            margin: 70px 0 150px;
+            margin: 35px 0 60px;
           }
           .subscribe {
             padding-left: 9px;
@@ -463,7 +480,7 @@
               display: flex;
               flex-direction: row;
               align-items: center;
-              padding: 26px 0 15px;
+              padding: 10px 0 15px;
 
               .subscribe-languages {
                 padding: 0 23px 0 0;
@@ -478,7 +495,7 @@
           ul {
             li {
               a.forset {
-                margin-top: 25px;
+                margin-top: 18px;
               }
             }
           }

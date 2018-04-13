@@ -78,6 +78,7 @@
     var sceneResizes
     var nextSceneIndex = 0
     var jumpToNextScene = false
+    var isLastScene = false
     var screen = device.default
   /* helpers */
 
@@ -146,6 +147,20 @@
       }
     }
     function easeInQuad(t) { return t*t }
+    function easeOutCirc(t) {
+      var t1 = t - 1
+      return Math.sqrt( 1 - t1 * t1 )
+
+    }
+    function easeOutQuad(t) {
+        return t * ( 2 - t )
+    }
+    function isRetinaDisplay() {
+        if (window.matchMedia) {
+            var mq = window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
+            return (mq && mq.matches || (window.devicePixelRatio > 1));
+        }
+    }
     // function easeInCubic(t) { return t*t*t }
 
   /* binds */
@@ -172,6 +187,10 @@
       if(typeof sceneResize === 'function') {
         sceneResize()
       }
+      if(isLastScene) {
+        isLastScene = false
+        window.requestAnimationFrame(draw)
+      }
     }
 
   /* preload */
@@ -187,13 +206,14 @@
       logo.onload = preloadCounterTick
       logo.src = 'assets/images/logo.png'
 
+      var prefix = isRetinaDisplay() ? 'x2' : ''
       loader_bg1 = new Image()
       loader_bg1.onload = preloadCounterTick
-      loader_bg1.src = 'assets/images/loader_bg1.png'
+      loader_bg1.src = 'assets/images/loader_bg1' + prefix + '.png'
 
       loader_bg2 = new Image()
       loader_bg2.onload = preloadCounterTick
-      loader_bg2.src = 'assets/images/loader_bg2.png'
+      loader_bg2.src = 'assets/images/loader_bg2' + prefix + '.png'
 
       for(var i = 1; i <= glitch.count; ++i) {
         var img = new Image()
@@ -227,8 +247,9 @@
       },
       bg: function(start, opts) {
         var img = opts.img
-        var imgWidth = img.width*wM
-        var imgHeight = img.height*wM
+        var divider = isRetinaDisplay() ? 2 : 1
+        var imgWidth = Math.floor(img.width*wM/divider)
+        var imgHeight = Math.floor(img.height*wM/divider)
         var ratio = r(start, opts.timing)
 
         ctx.save()
@@ -279,7 +300,7 @@
         ctx.fillRect(opts.x(ratio), opts.y(ratio), opts.w(ratio), opts.h(ratio))
       },
       slice: function(start, opts) {
-        var ratio = r(start, opts.timing)
+        var ratio = re(start, opts.timing, easeOutCirc)
         var sliceIndex = opts.index-1
 
         ctx.drawImage(slices.imgs[sliceIndex], w-slices.offset[sliceIndex], h-h*ratio, slices.widths[sliceIndex], slices.heights[sliceIndex])
@@ -296,9 +317,12 @@
         jumpToNextScene = true
       },
       fadeIn: function(start, opts) {
-        var ratio = re(start, opts.timing, easeInQuad)
+        var ratio = re(start, opts.timing, easeOutQuad)
         var element = opts.element
 
+        if(opts.translate !== false) {
+          element.style.top = -60*(1-ratio) + 'px'
+        }
         element.style.opacity = ratio
         element.style.filter = 'alpha(opacity=' + ratio * 100 + ")"
         if(ratio === 1) { return null }
@@ -319,9 +343,9 @@
 
           // var textWidth = ctx.measureText(number).width
           var x1 = dW()-slices.yearPosition[opts.position-1] + slices.yearWidth * .6
-          var y1 = dH() - slices.yearFontSize[opts.position-1]*14
+          var y1 = dH() - slices.yearFontSize[opts.position-1]*18
           var x2 = x1
-          var y2 = dH() - (slices.yearFontSize[opts.position-1]*14) * (1 - ratio)
+          var y2 = dH() - (slices.yearFontSize[opts.position-1]*18) * (1 - ratio)
 
 
           ctx.beginPath()
@@ -344,7 +368,7 @@
 
         ctx.save()
 
-          ctx.font = slices.yearFontSize[opts.position-1] + 'rem OswaldBold'
+          ctx.font = slices.yearFontSize[opts.position-1]*10 + 'px OswaldBold, sans-serif'
           ctx.textBaseline = 'top'
           ctx.globalCompositeOperation = 'overlay'
 
@@ -357,10 +381,13 @@
 
 
           ctx.fillStyle = 'rgba(255,255,255,1)'
-          ctx.fillText(number, dW() - slices.yearPosition[opts.position-1] + (slices.yearWidth*(1-ratio)), dH() - slices.yearFontSize[opts.position-1]*11)
-          ctx.fillText(number, dW() - slices.yearPosition[opts.position-1] + (slices.yearWidth*(1-ratio)), dH() - slices.yearFontSize[opts.position-1]*11)
+          ctx.fillText(number, dW() - slices.yearPosition[opts.position-1] + (slices.yearWidth*(1-ratio)), dH() - slices.yearFontSize[opts.position-1]*14)
+          ctx.fillText(number, dW() - slices.yearPosition[opts.position-1] + (slices.yearWidth*(1-ratio)), dH() - slices.yearFontSize[opts.position-1]*14)
 
         ctx.restore()
+      },
+      finish: function() {
+        isLastScene = true
       }
     }
 
@@ -415,7 +442,6 @@
           slices.yearWidth = yearWidth
           slices.yearPosition = []
 
-
           var wa = [4,3,2,1]
           wa.forEach(function(d) {
             slices.yearPosition.push(d * yearWidth + yearPadding)
@@ -429,12 +455,13 @@
             var fontSize = 25
             while(textWidth > yearWidth) {
               --fontSize
-              ctx.font = fontSize + 'rem OswaldBold'
+              ctx.font = fontSize * 10 + 'px OswaldBold, sans-serif'
               ctx.textBaseline = 'top'
               textWidth = ctx.measureText(d).width
             }
             slices.yearFontSize.push(fontSize)
           })
+          // console.log(slices.yearFontSize, slices.yearWidth)
           // console.log(slices, yearPadding)
 
         },
@@ -474,14 +501,14 @@
             x2: fdw(140),
             y2: function (ratio) { return dH() - ratio * dh(500) },
           }),
-          delayCheck(2000, drawings.rect, {
-            timing: 600,
-            onlyDesktop: true,
-            x: function() { return dW() - dw(32) - dw(135) },
-            y: function() { return 0 },
-            w: fdw(32),
-            h: function (ratio) { return ratio * dh(315) },
-          }),
+          // delayCheck(2000, drawings.rect, {
+          //   timing: 600,
+          //   onlyDesktop: true,
+          //   x: function() { return dW() - dw(32) - dw(135) },
+          //   y: function() { return 0 },
+          //   w: fdw(32),
+          //   h: function (ratio) { return ratio * dh(315) },
+          // }),
           delayCheck(1400, drawings.bg, {
             timing: 400,
             img: loader_bg1,
@@ -492,15 +519,15 @@
             img: loader_bg2,
             offset: { x: -290, y: -360 }
           }),
-          delayCheck(6000, drawings.rect, {
+          delayCheck(3800, drawings.rect, {
             timing: 1000,
             onlyDesktop: true,
             x: function() {return dW() - dw(32) - dw(135) },
-            y: function() {return dh(315) },
+            y: function() {return 0 }, // dh(315)
             w: fdw(32),
-            h: function (ratio) { return ratio * (dH()-dh(315)) },
+            h: function (ratio) { return ratio * dH() }, // ratio * (dH()-dh(315))
           }),
-          delayCheck(7000, drawings.end, {})
+          delayCheck(5000, drawings.end, {})
         ],
 
         [
@@ -530,14 +557,12 @@
           }),
 
 
-          delayCheck(100, drawings.slice, { timing: 900, index: 1, onlyDesktop: true, }),
-          delayCheck(400, drawings.slice, { timing: 600, index: 2, onlyDesktop: true, }),
-          delayCheck(100, drawings.slice, { timing: 900, index: 3, onlyDesktop: true, }),
-          delayCheck(300, drawings.slice, { timing: 700, index: 4, onlyDesktop: true, }),
+          delayCheck(100, drawings.slice, { timing: 700, index: 1, onlyDesktop: true, }),
+          delayCheck(500, drawings.slice, { timing: 400, index: 2, onlyDesktop: true, }),
+          delayCheck(100, drawings.slice, { timing: 700, index: 3, onlyDesktop: true, }),
+          delayCheck(400, drawings.slice, { timing: 400, index: 4, onlyDesktop: true, }),
 
           delayCheck(1200, drawings.css, { timing: 600, selector: '[data-id="1"]', klass: 'show' }),
-          delayCheck(1800, drawings.fadeIn, { timing: 600, selector: '[data-id="2"]', }),
-
 
           delayCheck(1200, drawings.bg2, {
             timing: 600,
@@ -564,17 +589,19 @@
           delayCheck(1850, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '1', position: 3, }),
           delayCheck(2050, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '8', position: 4, }),
 
-          delayCheck(2000, drawings.fadeIn, { timing: 600, selector: '[data-id="3"]', }),
-          delayCheck(2500, drawings.fadeIn, { timing: 600, selector: '[data-id="6"]', }),
-          delayCheck(2700, drawings.fadeIn, { timing: 600, selector: '[data-id="7"]', }),
-          delayCheck(3000, drawings.fadeIn, { timing: 600, selector: '[data-id="8"]', }),
-          delayCheck(3300, drawings.fadeIn, { timing: 600, selector: '[data-id="10"]', }),
-          delayCheck(3600, drawings.fadeIn, { timing: 600, selector: '[data-id="11"]', }),
+          delayCheck(2000, drawings.fadeIn, { timing: 800, selector: '[data-id="3"]', }),
+          delayCheck(2500, drawings.fadeIn, { timing: 800, selector: '[data-id="6"]', }),
+          delayCheck(2700, drawings.fadeIn, { timing: 800, selector: '[data-id="7"]', }),
+          delayCheck(3000, drawings.fadeIn, { timing: 800, selector: '[data-id="8"]', }),
+          delayCheck(3300, drawings.fadeIn, { timing: 800, selector: '[data-id="10"]', }),
+          delayCheck(3600, drawings.fadeIn, { timing: 800, selector: '[data-id="2"]', translate: false }),
+          delayCheck(3600, drawings.fadeIn, { timing: 800, selector: '[data-id="11"]', }),
 
           delayCheck(1800, drawings.css, { timing: 600, selector: '[data-id="4"]', klass: 'animation' }), // horizontal top
           delayCheck(3400, drawings.css, { timing: 600, selector: '[data-id="9"]', klass: 'animation' }), // horizontal bottom
           delayCheck(2200, drawings.css, { timing: 600, onlyDesktop: true, selector: '[data-id="5"]', klass: 'animation' }), // vertical line
           delayCheck(1000, drawings.css, { timing: 0, selector: '.source', klass: 'show' }),
+          delayCheck(5000, drawings.finish, {})
         ]
       ]
 
@@ -603,7 +630,7 @@
             options.element = document.querySelector(options.selector)
           }
           return function () {
-            if(options.onlyDesktop && !screen.desktop()) { return true }
+            if(options.onlyDesktop && (!screen.desktop() || dW() < 1200)) { return true }
             return callback(nw, options)
           }
         }
@@ -629,7 +656,9 @@
           }
         }
       })
-      window.requestAnimationFrame(draw)
+      if(!isLastScene) {
+        window.requestAnimationFrame(draw)
+      }
     }
 
   /* init */
