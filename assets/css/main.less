@@ -119,7 +119,8 @@
         opacity: 0;
       }
       .shift {
-        top: -60px;
+        position: relative;
+        top: -40px;
       }
       main {
 
@@ -182,6 +183,7 @@
           display:inline-block; /*required*/
           font: 5.2rem BebasNeue;
           padding-bottom: 22px;
+          // text-shadow: 1px 0px 0px #fff;
         }
         h1 b {
           font: 5.2rem BebasNeueBold;
@@ -191,6 +193,7 @@
         p {
           font: 1.8rem DejaVuNeueExtraLight;
           color: #424141;
+          text-shadow: 1px 0px 0px #fff;
           max-width: 450px;
           text-align: left;
           margin: 0 auto;
@@ -295,17 +298,14 @@
         padding: 30px 0 0 0;
         ul {
           display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          margin-left: 86px;
+          flex-direction: column;
+          align-items: center;
+
           /* justify-content: space-between; */
           li {
             display: flex;
             flex-direction: column;
             padding-bottom: 20px;
-            &:not(last-child) {
-              margin-right: 120px;
-            }
             label {
               font: 2rem BPGWeb001Caps;
               color: #9B9B9B;
@@ -366,6 +366,10 @@
     }
   }
   @media(min-width:992px){
+    .app {
+      .content {
+      }
+    }
   }
 
 
@@ -460,15 +464,15 @@
             }
           }
           h1 {
-            font: 6rem BebasNeue;
-            padding-left: 252px;
+            font: 4rem BebasNeue;
+            padding-left: 202px;
           }
           h1 b {
-            font: 6rem BebasNeueBold;
+            font: 4rem BebasNeueBold;
 
           }
           .space {
-            padding: 0 31px 0 220px;
+            padding: 0 31px 0 170px;
           }
           .register {
             font: 2.75rem BPGWeb001Caps;
@@ -493,11 +497,41 @@
             display: none;
           }
           ul {
+            flex-direction: row;
+            // flex-wrap: wrap;
+            align-items: flex-start;
+            margin-left: 86px;
             li {
+              &:not(last-child) {
+                margin-right: 120px;
+              }
               a.forset {
                 margin-top: 18px;
               }
             }
+          }
+        }
+      }
+    }
+  }
+  @media(min-width:1369px) {
+    // canvas {
+    //   display:block;
+    // }
+    .app {
+      .content {
+        margin-right: 50%;
+        main {
+          h1 {
+            font: 6rem BebasNeue;
+            padding-left: 252px;
+          }
+          h1 b {
+            font: 6rem BebasNeueBold;
+
+          }
+          .space {
+            padding: 0 31px 0 220px;
           }
         }
       }

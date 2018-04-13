@@ -321,7 +321,7 @@
         var element = opts.element
 
         if(opts.translate !== false) {
-          element.style.top = -60*(1-ratio) + 'px'
+          element.style.top = -40*(1-ratio) + 'px'
         }
         element.style.opacity = ratio
         element.style.filter = 'alpha(opacity=' + ratio * 100 + ")"
@@ -558,9 +558,9 @@
 
 
           delayCheck(100, drawings.slice, { timing: 700, index: 1, onlyDesktop: true, }),
-          delayCheck(500, drawings.slice, { timing: 400, index: 2, onlyDesktop: true, }),
+          delayCheck(300, drawings.slice, { timing: 400, index: 2, onlyDesktop: true, }),
           delayCheck(100, drawings.slice, { timing: 700, index: 3, onlyDesktop: true, }),
-          delayCheck(400, drawings.slice, { timing: 400, index: 4, onlyDesktop: true, }),
+          delayCheck(400, drawings.slice, { timing: 300, index: 4, onlyDesktop: true, }),
 
           delayCheck(1200, drawings.css, { timing: 600, selector: '[data-id="1"]', klass: 'show' }),
 
