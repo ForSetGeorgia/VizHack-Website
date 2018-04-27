@@ -519,7 +519,8 @@
             img: loader_bg2,
             offset: { x: -290, y: -360 }
           }),
-          delayCheck(3800, drawings.rect, {
+          // delayCheck(3800, drawings.rect, {
+          delayCheck(5800, drawings.rect, {
             timing: 1000,
             onlyDesktop: true,
             x: function() {return dW() - dw(32) - dw(135) },
@@ -527,7 +528,8 @@
             w: fdw(32),
             h: function (ratio) { return ratio * dH() }, // ratio * (dH()-dh(315))
           }),
-          delayCheck(5000, drawings.end, {})
+          // delayCheck(5000, drawings.end, {})
+          delayCheck(7000, drawings.end, {})
         ],
 
         [
