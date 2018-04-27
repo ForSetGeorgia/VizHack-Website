@@ -17,6 +17,14 @@
     src: url('../fonts/DejaVu Neue ExtraLight.ttf')  format('truetype');
   }
   @font-face {
+    font-family: 'SourceSansProLight';
+    src: url('../fonts/SourceSansPro-Light.otf')  format('opentype');
+  }
+  @font-face {
+    font-family: 'SourceSansProSemiBold';
+    src: url('../fonts/SourceSansPro-Semibold.otf')  format('opentype');
+  }
+  @font-face {
     font-family: 'RobotoLight';
     src: url('../fonts/Roboto Light.ttf')  format('truetype');
   }
@@ -145,7 +153,7 @@
         .vizhack2017 {
           display: none;
         }
-        .source {
+        .corner {
           display: none;
         }
         .hline {
@@ -191,7 +199,6 @@
 
 
         p {
-          font: 1.8rem DejaVuNeueExtraLight;
           color: #424141;
           text-shadow: 1px 0px 0px #fff;
           max-width: 450px;
@@ -201,9 +208,20 @@
           &:first-of-type {
             padding: 38px 0 26px;
           }
+          &:lang(ka) {
+            font: 1.8rem DejaVuNeueExtraLight;
+          }
+          &:lang(en) {
+            font: 1.8rem SourceSansProLight;
+          }
         }
         p b {
-          font: 1.8rem DejaVuNeue;
+          &:lang(ka) {
+            font: 1.8rem DejaVuNeue;
+          }
+          &:lang(en) {
+            font: 1.8rem SourceSansProSemiBold;
+          }
         }
 
         .register {
@@ -420,22 +438,36 @@
           }
           .vizhack2017 {
             display: block;
-            font: 2.0rem BebasNeueBold;
             color: #fff;
             // margin: 50px 0 0 45px;
             position: absolute;
             top: 35px;
             left: 25px;
+            &:lang(ka) {
+              font: 2rem BebasNeueBold;
+            }
+            &:lang(en) {
+              font: 3.3rem BebasNeueBold;
+            }
           }
-          .source {
+          .corner {
             display: none;
-            font: 1.4rem DejaVuNeueExtraLight;
-            color: #fff;
             position: fixed;
             top: 15px;
             right: 25px;
-            opacity: .6;
             text-align: right;
+            .source {
+              font: 1.4rem DejaVuNeueExtraLight;
+              color: #fff;
+              opacity: .6;
+            }
+            .language {
+              display: inline-block;
+              font: 2.2rem BebasNeueBold;
+              color: #fff;
+              opacity: .8;
+              margin-top: 16px;
+            }
             &.show {
               display: block;
             }

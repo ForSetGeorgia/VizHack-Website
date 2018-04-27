@@ -80,7 +80,7 @@
     var nextSceneIndex = 0
     var jumpToNextScene = false
     var isLastScene = false
-    var screen = device.default
+    var screen = device
   /* helpers */
 
     function n() {
@@ -529,8 +529,8 @@
             w: fdw(32),
             h: function (ratio) { return ratio * dH() }, // ratio * (dH()-dh(315))
           }),
-          // delayCheck(5000, drawings.end, {})
-          delayCheck(7000, drawings.end, {})
+          // delayCheck(7000, drawings.end, {})
+          delayCheck(0, drawings.end, {})
         ],
 
         [
@@ -603,7 +603,7 @@
           delayCheck(1800, drawings.css, { timing: 600, selector: '[data-id="4"]', klass: 'animation' }), // horizontal top
           delayCheck(3400, drawings.css, { timing: 600, selector: '[data-id="9"]', klass: 'animation' }), // horizontal bottom
           delayCheck(2200, drawings.css, { timing: 600, onlyDesktop: true, selector: '[data-id="5"]', klass: 'animation' }), // vertical line
-          delayCheck(1000, drawings.css, { timing: 0, selector: '.source', klass: 'show' }),
+          delayCheck(1000, drawings.css, { timing: 0, selector: '.corner', klass: 'show' }),
           delayCheck(5000, drawings.finish, {})
         ]
       ]
