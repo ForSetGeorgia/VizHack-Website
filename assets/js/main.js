@@ -1,5 +1,6 @@
 (function() {
   /* variables */
+    var lang = document.documentElement.lang
     var canvas = document.getElementById('canvas')
     var ctx = canvas.getContext('2d')
     var logo = null
@@ -24,17 +25,17 @@
       preload: function () {
         loader_bg3 = new Image()
         loader_bg3.onload = assets.tick
-        loader_bg3.src = 'assets/images/loader_bg3.png'
+        loader_bg3.src = '../assets/images/loader_bg3.png'
 
         loader_bg4 = new Image()
         loader_bg4.onload = assets.tick
-        loader_bg4.src = 'assets/images/loader_bg4.png'
+        loader_bg4.src = '../assets/images/loader_bg4.png'
 
         for(var i = 1; i <= slices.count; ++i) {
           var img = new Image()
           ++assets.counter
           img.onload = assets.tick
-          img.src = 'assets/images/slices/slice_' + i + '.png'
+          img.src = '../assets/images/slices/slice_' + i + '.png'
           slices.imgs.push(img)
         }
       },
@@ -204,22 +205,22 @@
     function preload() {
       logo = new Image()
       logo.onload = preloadCounterTick
-      logo.src = 'assets/images/logo.png'
+      logo.src = '../assets/images/logo_' + lang + '.png'
 
       var prefix = isRetinaDisplay() ? 'x2' : ''
       loader_bg1 = new Image()
       loader_bg1.onload = preloadCounterTick
-      loader_bg1.src = 'assets/images/loader_bg1' + prefix + '.png'
+      loader_bg1.src = '../assets/images/loader_bg1' + prefix + '.png'
 
       loader_bg2 = new Image()
       loader_bg2.onload = preloadCounterTick
-      loader_bg2.src = 'assets/images/loader_bg2' + prefix + '.png'
+      loader_bg2.src = '../assets/images/loader_bg2' + prefix + '.png'
 
       for(var i = 1; i <= glitch.count; ++i) {
         var img = new Image()
         ++preloadCounter
         img.onload = preloadCounterTick
-        img.src = 'assets/images/glitch/glitch_' + i + '.png'
+        img.src = '../assets/images/glitch/' + lang + '/glitch_' + i + '.png'
         glitch.imgs.push(img)
       }
     }
