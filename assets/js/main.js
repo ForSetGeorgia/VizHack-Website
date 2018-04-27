@@ -79,7 +79,7 @@
     var nextSceneIndex = 0
     var jumpToNextScene = false
     var isLastScene = false
-    var screen = device.default
+    var screen = device
   /* helpers */
 
     function n() {
