@@ -529,8 +529,8 @@
             w: fdw(32),
             h: function (ratio) { return ratio * dH() }, // ratio * (dH()-dh(315))
           }),
-          // delayCheck(7000, drawings.end, {})
-          delayCheck(0, drawings.end, {})
+          delayCheck(7000, drawings.end, {})
+          // delayCheck(0, drawings.end, {})
         ],
 
         [

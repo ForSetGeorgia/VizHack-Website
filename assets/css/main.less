@@ -21,6 +21,10 @@
     src: url('../fonts/SourceSansPro-Light.otf')  format('opentype');
   }
   @font-face {
+    font-family: 'SourceSansProBold';
+    src: url('../fonts/SourceSansPro-Bold.otf')  format('opentype');
+  }
+  @font-face {
     font-family: 'SourceSansProSemiBold';
     src: url('../fonts/SourceSansPro-Semibold.otf')  format('opentype');
   }
@@ -155,6 +159,21 @@
         }
         .corner {
           display: none;
+          padding: 15px 0 15px 25px;
+          text-align: left;
+          .source {
+            display: none;
+          }
+          .language {
+            display: inline-block;
+            font: 3rem BebasNeueBold;
+            color: #606060;
+            opacity: .8;
+            margin-top: 16px;
+          }
+          &.show {
+            display: block;
+          }
         }
         .hline {
           visibility: hidden;
@@ -212,7 +231,7 @@
             font: 1.8rem DejaVuNeueExtraLight;
           }
           &:lang(en) {
-            font: 1.8rem SourceSansProLight;
+            font: 2rem SourceSansProLight;
           }
         }
         p b {
@@ -220,56 +239,41 @@
             font: 1.8rem DejaVuNeue;
           }
           &:lang(en) {
-            font: 1.8rem SourceSansProSemiBold;
+            font: 2rem SourceSansProSemiBold;
           }
         }
 
         .register {
           display: inline-block;
-          font: 2.75rem BPGWeb001Caps;
+
           color: #fff;
           padding: 16px 25px;
-          border-radius: 3rem;
+          border-radius: 4rem;
           border: 0;
           margin: 65px 0;
           text-decoration: none;
+          white-space: nowrap;
+          &:lang(ka) {
+            font: 2.75rem BPGWeb001Caps;
+          }
+          &:lang(en) {
+            font: 4.1rem SourceSansProSemiBold;
+          }
         }
         .subscribe {
           label {
-            font: 2rem BPGWeb001Caps;
-            color: #606060;
+            color: #8e8e8e;
+            &:lang(ka) {
+              font: 2rem BPGWeb001Caps;
+            }
+            &:lang(en) {
+              font: 2.1rem SourceSansProSemiBold;
+            }
           }
           .subscribe-row {
             display: flex;
             flex-direction: column;
             align-items: center;
-          }
-          ul {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            padding: 50px 0 42px;
-            li {
-              input {
-                position: absolute;
-                visibility: hidden;
-              }
-              label {
-                font: 1.87rem BPGWeb001;
-                color: #777777;
-                cursor: pointer;
-              }
-              input:checked + label {
-                color: #ff9181;
-              }
-              &.line {
-                width: 1px;
-                height: 15px;
-                margin: 0 16px;
-                background-color: #4f4f4f;
-
-              }
-            }
           }
           .subscribe-submit {
             display: flex;
@@ -280,12 +284,17 @@
               outline: none;
             }
             input[type="email"] {
-              font: 2rem DejaVuNeueExtraLight;
               color: #9B9B9B;
               // flex: 1;
               border-top-left-radius: 19px;
               border-top-right-radius: 19px;
               padding: 12px 10px 12px 20px;
+              &:lang(ka) {
+                font: 2rem DejaVuNeueExtraLight;
+              }
+              &:lang(en) {
+                font: 2.7rem SourceSansProLight;
+              }
             }
             .line {
               /* width: 1px; */
@@ -302,12 +311,17 @@
               /* margin: 12px 17px; */
             }
             input[type="submit"] {
-              font: 2rem DejaVuNeueExtraLight;
               color: #606060;
               border-bottom-left-radius: 19px;
               border-bottom-right-radius: 19px;
               padding: 12px 20px 12px 10px;
               cursor: pointer;
+              &:lang(ka) {
+                font: 2rem DejaVuNeueExtraLight;
+              }
+              &:lang(en) {
+                font: 2.8rem SourceSansProSemiBold;
+              }
             }
           }
         }
@@ -328,9 +342,14 @@
             flex-direction: column;
             padding-bottom: 20px;
             label {
-              font: 2rem BPGWeb001Caps;
               color: #9B9B9B;
               padding-bottom: 10px;
+              &:lang(ka) {
+                font: 2rem BPGWeb001Caps;
+              }
+              &:lang(en) {
+                font: 1.8rem SourceSansProBold;
+              }
             }
             a {
               margin: 0 auto;
@@ -339,10 +358,15 @@
         }
         .vizhack2017 {
           display: block;
-          font: 2rem BebasNeueBold;
           color: #ff9181;
-          margin: 65px 0 50px;
+          margin: 40px 0 50px;
           text-align: center;
+          &:lang(ka) {
+            font: 2rem BebasNeueBold;
+          }
+          &:lang(en) {
+            font: 3rem BebasNeueBold;
+          }
         }
       }
     }
@@ -354,7 +378,12 @@
         main {
           padding: 156px 0 0; // 60px
           .register {
-            font: 4rem BPGWeb001Caps;
+            &:lang(ka) {
+              font: 4rem BPGWeb001Caps;
+            }
+            &:lang(en) {
+              font: 3.7rem SourceSansProSemiBold;
+            }
           }
           .subscribe {
             .subscribe-submit {
@@ -441,35 +470,36 @@
             color: #fff;
             // margin: 50px 0 0 45px;
             position: absolute;
-            top: 35px;
             left: 25px;
             &:lang(ka) {
+              top: 35px;
               font: 2rem BebasNeueBold;
             }
             &:lang(en) {
+              top: 18px;
               font: 3.3rem BebasNeueBold;
             }
           }
           .corner {
-            display: none;
             position: fixed;
             top: 15px;
             right: 25px;
             text-align: right;
+            padding: 0;
             .source {
-              font: 1.4rem DejaVuNeueExtraLight;
+              display: block;
               color: #fff;
               opacity: .6;
+              &:lang(ka) {
+                font: 1.4rem DejaVuNeueExtraLight;
+              }
+              &:lang(en) {
+                font: 1.8rem SourceSansProLight;
+              }
             }
             .language {
-              display: inline-block;
               font: 2.2rem BebasNeueBold;
               color: #fff;
-              opacity: .8;
-              margin-top: 16px;
-            }
-            &.show {
-              display: block;
             }
           }
           .circle {
@@ -497,6 +527,20 @@
             &:first-of-type {
               padding: 30px 0 30px;
             }
+            &:lang(ka) {
+              font: 1.8rem DejaVuNeueExtraLight;
+            }
+            &:lang(en) {
+              font: 1.8rem SourceSansProLight;
+            }
+          }
+          p b {
+            &:lang(ka) {
+              font: 1.8rem DejaVuNeue;
+            }
+            &:lang(en) {
+              font: 1.8rem SourceSansProSemiBold;
+            }
           }
           h1 {
             font: 4rem BebasNeue;
@@ -510,8 +554,13 @@
             padding: 0 31px 0 170px;
           }
           .register {
-            font: 2.75rem BPGWeb001Caps;
             margin: 35px 0 60px;
+            &:lang(ka) {
+              font: 2.75rem BPGWeb001Caps;
+            }
+            &:lang(en) {
+              font: 3.7rem SourceSansProSemiBold;
+            }
           }
           .subscribe {
             padding-left: 9px;
@@ -520,9 +569,23 @@
               flex-direction: row;
               align-items: center;
               padding: 10px 0 15px;
-
-              .subscribe-languages {
-                padding: 0 23px 0 0;
+            }
+            .subscribe-submit {
+              input[type="email"] {
+                &:lang(ka) {
+                  font: 2rem DejaVuNeueExtraLight;
+                }
+                &:lang(en) {
+                  font: 1.5rem SourceSansProLight;
+                }
+              }
+              input[type="submit"] {
+                &:lang(ka) {
+                  font: 2rem DejaVuNeueExtraLight;
+                }
+                &:lang(en) {
+                  font: 2.1rem SourceSansProSemiBold;
+                }
               }
             }
           }
