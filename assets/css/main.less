@@ -157,23 +157,16 @@
         .vizhack2017 {
           display: none;
         }
-        .corner {
+        .source {
           display: none;
-          padding: 15px 0 15px 25px;
+        }
+        .language {
+          position: relative;
+          display: block;
+          font: 3rem BebasNeueBold;
+          color: #606060;
+          padding: 15px 0 30px 25px;
           text-align: left;
-          .source {
-            display: none;
-          }
-          .language {
-            display: inline-block;
-            font: 3rem BebasNeueBold;
-            color: #606060;
-            opacity: .8;
-            margin-top: 16px;
-          }
-          &.show {
-            display: block;
-          }
         }
         .hline {
           visibility: hidden;
@@ -344,11 +337,19 @@
             label {
               color: #9B9B9B;
               padding-bottom: 10px;
+              text-align: center;
               &:lang(ka) {
-                font: 2rem BPGWeb001Caps;
+                font: 1.7rem BPGWeb001Caps;
               }
               &:lang(en) {
                 font: 1.8rem SourceSansProBold;
+              }
+            }
+            .items {
+              display: flex;
+              flex-direction: column;
+              a:not(last-child) {
+                margin-bottom: 20px;
               }
             }
             a {
@@ -470,38 +471,43 @@
             color: #fff;
             // margin: 50px 0 0 45px;
             position: absolute;
-            left: 25px;
+            left: 18px;
             &:lang(ka) {
               top: 35px;
               font: 2rem BebasNeueBold;
             }
             &:lang(en) {
-              top: 18px;
-              font: 3.3rem BebasNeueBold;
+              top: 36px;
+              font: 2.5rem BebasNeueBold;
             }
           }
-          .corner {
+          .language {
             position: fixed;
-            top: 15px;
-            right: 25px;
+            top: 20px;
+            right: 35px;
+            font: 2.2rem BebasNeueBold;
+            color: #fff;
             text-align: right;
             padding: 0;
-            .source {
+          }
+          .source {
+            position: fixed;
+            bottom: 10px;
+            right: 30px;
+            display: block;
+            color: #fff;
+            opacity: .6;
+            &.show {
               display: block;
-              color: #fff;
-              opacity: .6;
-              &:lang(ka) {
-                font: 1.4rem DejaVuNeueExtraLight;
-              }
-              &:lang(en) {
-                font: 1.8rem SourceSansProLight;
-              }
             }
-            .language {
-              font: 2.2rem BebasNeueBold;
-              color: #fff;
+            &:lang(ka) {
+              font: 1.4rem DejaVuNeueExtraLight;
+            }
+            &:lang(en) {
+              font: 1.4rem SourceSansProLight;
             }
           }
+
           .circle {
             display: block;
             position: absolute;
@@ -559,7 +565,7 @@
               font: 2.75rem BPGWeb001Caps;
             }
             &:lang(en) {
-              font: 3.7rem SourceSansProSemiBold;
+              font: 3rem SourceSansProSemiBold;
             }
           }
           .subscribe {
@@ -600,14 +606,19 @@
             align-items: flex-start;
             margin-left: 86px;
             li {
+              flex: 1;
               &:not(last-child) {
-                margin-right: 120px;
+                // margin-right: 120px;
               }
               a.forset {
                 margin-top: 18px;
               }
               a.sovlab {
                 margin-top: 14px;
+              }
+              .items {
+                display: flex;
+                flex-direction: row;
               }
             }
           }

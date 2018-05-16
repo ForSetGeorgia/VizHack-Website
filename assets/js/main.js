@@ -162,6 +162,9 @@
             return (mq && mq.matches || (window.devicePixelRatio > 1));
         }
     }
+    function scaleBetween(v, minInput, maxInput, minOutput, maxOutput) {
+      return (maxInput - minInput) * (v - minOutput) / (maxOutput - minOutput) + minInput;
+    }
     // function easeInCubic(t) { return t*t*t }
 
   /* binds */
@@ -322,10 +325,13 @@
         var element = opts.element
 
         if(opts.translate !== false) {
-          element.style.top = -40*(1-ratio) + 'px'
+          var top = opts.hasOwnProperty('top') ? opts.top : 0
+          element.style.top = -40*(1-ratio) + top + 'px'
         }
-        element.style.opacity = ratio
-        element.style.filter = 'alpha(opacity=' + ratio * 100 + ")"
+        var maxopacity = opts.hasOwnProperty('maxopacity') ? opts.maxopacity : 1
+
+        element.style.opacity = ratio*maxopacity
+        element.style.filter = 'alpha(opacity=' + ratio * maxopacity * 100 + ")"
         if(ratio === 1) { return null }
       },
       css: function(start, opts) {
@@ -592,6 +598,7 @@
           delayCheck(1850, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '1', position: 3, }),
           delayCheck(2050, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '8', position: 4, }),
 
+          delayCheck(1500, drawings.fadeIn, { timing: 800, selector: '[data-id="12"]', maxopacity: .8, top: 20 }),
           delayCheck(2000, drawings.fadeIn, { timing: 800, selector: '[data-id="3"]', }),
           delayCheck(2500, drawings.fadeIn, { timing: 800, selector: '[data-id="6"]', }),
           delayCheck(2700, drawings.fadeIn, { timing: 800, selector: '[data-id="7"]', }),
@@ -603,7 +610,8 @@
           delayCheck(1800, drawings.css, { timing: 600, selector: '[data-id="4"]', klass: 'animation' }), // horizontal top
           delayCheck(3400, drawings.css, { timing: 600, selector: '[data-id="9"]', klass: 'animation' }), // horizontal bottom
           delayCheck(2200, drawings.css, { timing: 600, onlyDesktop: true, selector: '[data-id="5"]', klass: 'animation' }), // vertical line
-          delayCheck(1000, drawings.css, { timing: 0, selector: '.corner', klass: 'show' }),
+          // delayCheck(1000, drawings.css, { timing: 0, selector: '.language', klass: 'show' }),
+          delayCheck(1000, drawings.css, { timing: 0, selector: '.source', klass: 'show' }),
           delayCheck(5000, drawings.finish, {})
         ]
       ]
