@@ -1,5 +1,6 @@
 (function() {
   /* variables */
+    var lang = document.documentElement.lang
     var canvas = document.getElementById('canvas')
     var ctx = canvas.getContext('2d')
     var logo = null
@@ -24,17 +25,17 @@
       preload: function () {
         loader_bg3 = new Image()
         loader_bg3.onload = assets.tick
-        loader_bg3.src = 'assets/images/loader_bg3.png'
+        loader_bg3.src = '../assets/images/loader_bg3.png'
 
         loader_bg4 = new Image()
         loader_bg4.onload = assets.tick
-        loader_bg4.src = 'assets/images/loader_bg4.png'
+        loader_bg4.src = '../assets/images/loader_bg4.png'
 
         for(var i = 1; i <= slices.count; ++i) {
           var img = new Image()
           ++assets.counter
           img.onload = assets.tick
-          img.src = 'assets/images/slices/slice_' + i + '.png'
+          img.src = '../assets/images/slices/slice_' + i + '.png'
           slices.imgs.push(img)
         }
       },
@@ -161,6 +162,9 @@
             return (mq && mq.matches || (window.devicePixelRatio > 1));
         }
     }
+    function scaleBetween(v, minInput, maxInput, minOutput, maxOutput) {
+      return (maxInput - minInput) * (v - minOutput) / (maxOutput - minOutput) + minInput;
+    }
     // function easeInCubic(t) { return t*t*t }
 
   /* binds */
@@ -204,22 +208,22 @@
     function preload() {
       logo = new Image()
       logo.onload = preloadCounterTick
-      logo.src = 'assets/images/logo.png'
+      logo.src = '../assets/images/logo_' + lang + '.png'
 
       var prefix = isRetinaDisplay() ? 'x2' : ''
       loader_bg1 = new Image()
       loader_bg1.onload = preloadCounterTick
-      loader_bg1.src = 'assets/images/loader_bg1' + prefix + '.png'
+      loader_bg1.src = '../assets/images/loader_bg1' + prefix + '.png'
 
       loader_bg2 = new Image()
       loader_bg2.onload = preloadCounterTick
-      loader_bg2.src = 'assets/images/loader_bg2' + prefix + '.png'
+      loader_bg2.src = '../assets/images/loader_bg2' + prefix + '.png'
 
       for(var i = 1; i <= glitch.count; ++i) {
         var img = new Image()
         ++preloadCounter
         img.onload = preloadCounterTick
-        img.src = 'assets/images/glitch/glitch_' + i + '.png'
+        img.src = '../assets/images/glitch/' + lang + '/glitch_' + i + '.png'
         glitch.imgs.push(img)
       }
     }
@@ -321,10 +325,13 @@
         var element = opts.element
 
         if(opts.translate !== false) {
-          element.style.top = -40*(1-ratio) + 'px'
+          var top = opts.hasOwnProperty('top') ? opts.top : 0
+          element.style.top = -40*(1-ratio) + top + 'px'
         }
-        element.style.opacity = ratio
-        element.style.filter = 'alpha(opacity=' + ratio * 100 + ")"
+        var maxopacity = opts.hasOwnProperty('maxopacity') ? opts.maxopacity : 1
+
+        element.style.opacity = ratio*maxopacity
+        element.style.filter = 'alpha(opacity=' + ratio * maxopacity * 100 + ")"
         if(ratio === 1) { return null }
       },
       css: function(start, opts) {
@@ -528,8 +535,8 @@
             w: fdw(32),
             h: function (ratio) { return ratio * dH() }, // ratio * (dH()-dh(315))
           }),
-          // delayCheck(5000, drawings.end, {})
           delayCheck(7000, drawings.end, {})
+          // delayCheck(0, drawings.end, {})
         ],
 
         [
@@ -591,10 +598,11 @@
           delayCheck(1850, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '1', position: 3, }),
           delayCheck(2050, drawings.yearNumber, { timing: 400, onlyDesktop: true, number: '8', position: 4, }),
 
+          delayCheck(1500, drawings.fadeIn, { timing: 800, selector: '[data-id="12"]', maxopacity: .8, top: 20 }),
           delayCheck(2000, drawings.fadeIn, { timing: 800, selector: '[data-id="3"]', }),
           delayCheck(2500, drawings.fadeIn, { timing: 800, selector: '[data-id="6"]', }),
           delayCheck(2700, drawings.fadeIn, { timing: 800, selector: '[data-id="7"]', }),
-          delayCheck(3000, drawings.fadeIn, { timing: 800, selector: '[data-id="8"]', }),
+          // delayCheck(3000, drawings.fadeIn, { timing: 800, selector: '[data-id="8"]', }),
           delayCheck(3300, drawings.fadeIn, { timing: 800, selector: '[data-id="10"]', }),
           delayCheck(3600, drawings.fadeIn, { timing: 800, selector: '[data-id="2"]', translate: false }),
           delayCheck(3600, drawings.fadeIn, { timing: 800, selector: '[data-id="11"]', }),
@@ -602,6 +610,7 @@
           delayCheck(1800, drawings.css, { timing: 600, selector: '[data-id="4"]', klass: 'animation' }), // horizontal top
           delayCheck(3400, drawings.css, { timing: 600, selector: '[data-id="9"]', klass: 'animation' }), // horizontal bottom
           delayCheck(2200, drawings.css, { timing: 600, onlyDesktop: true, selector: '[data-id="5"]', klass: 'animation' }), // vertical line
+          // delayCheck(1000, drawings.css, { timing: 0, selector: '.language', klass: 'show' }),
           delayCheck(1000, drawings.css, { timing: 0, selector: '.source', klass: 'show' }),
           delayCheck(5000, drawings.finish, {})
         ]
