@@ -602,7 +602,7 @@
           delayCheck(2000, drawings.fadeIn, { timing: 800, selector: '[data-id="3"]', }),
           delayCheck(2500, drawings.fadeIn, { timing: 800, selector: '[data-id="6"]', }),
           delayCheck(2700, drawings.fadeIn, { timing: 800, selector: '[data-id="7"]', }),
-          delayCheck(3000, drawings.fadeIn, { timing: 800, selector: '[data-id="8"]', }),
+          // delayCheck(3000, drawings.fadeIn, { timing: 800, selector: '[data-id="8"]', }),
           delayCheck(3300, drawings.fadeIn, { timing: 800, selector: '[data-id="10"]', }),
           delayCheck(3600, drawings.fadeIn, { timing: 800, selector: '[data-id="2"]', translate: false }),
           delayCheck(3600, drawings.fadeIn, { timing: 800, selector: '[data-id="11"]', }),
